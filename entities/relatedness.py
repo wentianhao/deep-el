@@ -11,6 +11,7 @@
 import os
 import Utils.utils
 import entities.EX_wiki_words as eww
+import torch
 
 data_dir = '/home/wenh/'
 rel_test_txtfilename = data_dir+'basic_data/relatedness/test.svm'
@@ -45,10 +46,18 @@ def load_reltd_set(rel_t7filename, rel_txtfilename, set_type):
                     reltd[q]={}
                     reltd[q][e1]=e1
                     cand = {}
-                reltd[q][cand[e2]] = label
+                cand[e2] = label
+                reltd[q]['cand'] = cand
 
+        print('    Done loading relatedness '+ set_type + '. Num queries = '+len(reltd)+'\n')
+        print('Writing t7 File for future usage. Next time relatedness dataset will load faster!')
+        torch.save(rel_t7filename,reltd)
+        print(' Done saving.')
 
-    return 'q'
+        return reltd
+    else:
+        print('---> from t7 file.')
+        return torch.load(rel_t7filename)
 
 
 
