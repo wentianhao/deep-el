@@ -49,8 +49,9 @@ else:
             ent_name = parts[0]
             ent_wikiid = int(parts[1])
 
-        if not wdpi.wiki_disambiguation_index[ent_wikiid]:
-            if not rltd_only
+        # if not wdpi.wiki_disambiguation_index[ent_wikiid]:
+        #     if not rltd_only
+
 
 
 
