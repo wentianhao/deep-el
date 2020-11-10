@@ -20,9 +20,9 @@ rel_validate_txtfilename = data_dir + 'basic_data/relatedness/validate.svm'
 rel_validate_t7filename = data_dir + 'generated/relatedness_validate.t7'
 
 def load_reltd_set(rel_t7filename, rel_txtfilename, set_type):
-    print('==> Loading relatedness '+set_type)
+    print('==> Loading relatedness '+str(set_type))
     if not os.path.exists(rel_t7filename):
-        print('  ---> t7 file NOT found. Loading relatedness '+set_type+' from txt file instead (slower).')
+        print('  ---> t7 file NOT found. Loading relatedness '+str(set_type)+' from txt file instead (slower).')
         reltd = {}
         with open(rel_txtfilename,'r',encoding='utf8') as f:
             for line in f:
@@ -49,9 +49,9 @@ def load_reltd_set(rel_t7filename, rel_txtfilename, set_type):
                 cand[e2] = label
                 reltd[q]['cand'] = cand
 
-        print('    Done loading relatedness '+ set_type + '. Num queries = '+len(reltd)+'\n')
+        print('    Done loading relatedness '+ str(set_type) + '. Num queries = '+str(len(reltd))+'\n')
         print('Writing t7 File for future usage. Next time relatedness dataset will load faster!')
-        torch.save(rel_t7filename,reltd)
+        torch.save(reltd,rel_t7filename)
         print(' Done saving.')
 
         return reltd
