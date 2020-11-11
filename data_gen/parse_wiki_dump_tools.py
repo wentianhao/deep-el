@@ -15,14 +15,14 @@ def extract_text_and_hyp(line,mark_mentions):
     num_mentions = 0
 
     while begin_start_hyp :
-        text = text + line.sub(end_end_hyp,begin_start_hyp - 1)
+        text = text + line[end_end_hyp:begin_start_hyp]
 
         next_quotes = line.find('">',end_start_hyp + 1)
         end_quotes = next_quotes + len('">') -1
         if next_quotes + 1:
-            ent_name = line.sub(end_start_hyp,next_quotes-1)
+            ent_name = line[end_start_hyp:next_quotes]
             if begin_end_hyp:
-                mention = line.sub(end_quotes,begin_end_hyp-1)
+                mention = line[end_quotes:begin_end_hyp]
                 mention_maker = False
                 good_mention = True
                 good_mention = good_mention and (not mention.find('Wikipedia'))
@@ -40,7 +40,7 @@ def extract_text_and_hyp(line,mark_mentions):
                         if ent_name.find('#')+1:
                             diez_ent_errors = diez_ent_errors +1
                         else:
-                            ent_wikiId = get_ent_wikiid_from_name(ent_name,True)
+                            ent_wikiId = eni.get_ent_wikiid_from_name(ent_name,True)
 
 
 

@@ -35,4 +35,84 @@ def gen_test_ace(dataset):
 
     print('\nGenerating test data from ' + dataset + ' set ')
 
-    path = root_data_dir + 'basic_data/test_datasets/wned-datasets/'
+    path = root_data_dir + 'basic_data/test_datasets/wned-datasets/'+dataset+'/'
+    out_file = root_data_dir + 'generated/test_train_data/wned-'+dataset+'.csv'
+
+    annotations = path + dataset+'.xml'
+
+    num_nonexistent_ent_id = 0
+    num_correct_ents = 0
+    cur_doc_text = ''
+    cur_doc_name = ''
+    with open(annotations,'r',encoding='utf8') as f:
+        line = f.readline()
+        while line:
+            if not line.find('document docName=\"')+1:
+                if line.find('<annotation>') + 1:
+                    line = f.readline()
+                    x = line.find('<mention>')
+                    y = x + len('<mention>>') - 1
+                    z = line.find('</mention>')
+                    t = z + len('</mention>') - 1
+                    cur_mention = line[y:z]
+                    print(cur_mention)
+                    cur_mention = cur_mention.replace('&amp;','&')
+
+                    # entity title
+                    line = f.readline()
+                    x = line.find('<wikiName>')
+                    y = x + len('<wikiName>')
+                    z = line.find('</wikiName>')
+                    t = z + len('</wikiName>')
+                    cur_ent_title = ''
+                    if not line.find('<wikiName/>') + 1:
+                        cur_ent_title = line[y:z]
+
+                    # offset
+                    line = f.readline()
+                    x = line.find('<offset>')
+                    y = x + len('<offset>')
+                    z = line.find('</offset>')
+                    t = z + len('</offset>')
+                    offset = int(line[y:z])
+
+                    line = f.readline()
+                    x = line.find('<length>')
+                    y = x + len('<length>')
+                    z = line.find('</length>')
+                    t = z + len('</length>')
+                    length = int(line[y:z])
+                    length = len(cur_mention)
+
+                    line = f.readline()
+                    if line.find('<entity/>') + 1:
+                        line = f.readline()
+
+                    assert line.find('</annotation>')
+
+                    offset = max(1,offset-10)
+                    while (cur_doc_text[offset:offset+length-1] != cur_mention):
+
+
+
+
+
+            else:
+                x = line.find('document docName=\"')
+                y = x + len('document docName=\"')
+                z = line.find('\">')
+                t = z + len('\">') - 1
+                cur_doc_name = line[y:z]
+                cur_doc_name = cur_doc_name.replace('&amp;','&')
+                # 通过docName读取无标签文本
+                with open(path+'RawText/'+cur_doc_name,'r',encoding='utf8') as fd:
+                    for cur_line in fd:
+                        cur_doc_text = cur_doc_text + cur_line
+                    cur_doc_text = cur_doc_text.replace('&amp;','&')
+
+            line = f.readline()
+
+
+if __name__ == '__main__':
+    gen_test_ace('wikipedia')
+
