@@ -1,3 +1,10 @@
+'''
+Each entity has:
+a) a Wikipedia URL refferred as 'name' here
+b) a Wikipedia ID refferred as 'ent_wikiid' or 'wikiid' here
+c) an ID that will be used in the entity embeddings lookup table. Referred as 'ent_thid' or 'thid' there
+'''
+
 import Utils.utils as tl
 import data_gen.wiki_redirects_index as wri
 import data_gen.wiki_disambiguation_pages_index as wdpi
@@ -6,8 +13,8 @@ import os
 import entities.relatedness
 
 rltd_only = False
-enttype = 'RLTD'
-if enttype and enttype!='ALL':
+ent_type = 'RLTD'
+if ent_type and ent_type!='ALL':
     rltd_only =True
 
 # Unk entity wikiid
@@ -49,8 +56,8 @@ else:
             ent_name = parts[0]
             ent_wikiid = int(parts[1])
 
-        # if not wdpi.wiki_disambiguation_index[ent_wikiid]:
-        #     if not rltd_only
+        if not wdpi.wiki_disambiguation_index[ent_wikiid]:
+            if not rltd_only or
 
 
 

@@ -1,12 +1,12 @@
 '''
- The code in this file does two things:
-  a) extracts and puts the entity relatedness dataset in two maps (reltd_validate and
-    reltd_test). Provides functions to evaluate entity embeddings on this dataset
-    (Table 1 in our paper).
-  b) extracts all entities that appear in any of the ED (as mention candidates) or
-      entity relatedness datasets. These are placed in an object called rewtr that will
-      be used to restrict the set of entities for which we want to train entity embeddings
-      (done with the file entities/learn_e2v/learn_a.lua).
+The code in this file does two things:
+a) extracts and puts the entity relatedness dataset in two maps (reltd_validate and
+reltd_test). Provides functions to evaluate entity embeddings on this dataset
+(Table 1 in our paper).
+b) extracts all entities that appear in any of the ED (as mention candidates) or
+entity relatedness datasets. These are placed in an object called rewtr that will
+be used to restrict the set of entities for which we want to train entity embeddings
+(done with the file entities/learn_e2v/learn_a.lua).
 '''
 import os
 import Utils.utils

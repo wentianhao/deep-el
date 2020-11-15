@@ -1,4 +1,9 @@
+# Utility functions to extract the text and hyperlinks from each page in the Wikipedia corpus.
+# 提取文本和超链接
+
+import Utils.utils
 import entities.ent_name_id as eni
+
 
 def extract_text_and_hyp(line,mark_mentions):
     list_hyp = {}   # (mention,entities)
@@ -36,7 +41,7 @@ def extract_text_and_hyp(line,mark_mentions):
                     ent_name = eni.preprocess_ent_name(ent_name)
 
                     i = ent_name.find('List of ') + 1
-                    if (not 1) or(i !=1):
+                    if (not i) or(i !=1):
                         if ent_name.find('#')+1:
                             diez_ent_errors = diez_ent_errors +1
                         else:

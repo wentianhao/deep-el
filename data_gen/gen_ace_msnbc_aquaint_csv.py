@@ -74,7 +74,7 @@ def gen_test_ace(dataset):
                     y = x + len('<offset>')
                     z = line.find('</offset>')
                     t = z + len('</offset>')
-                    offset = int(line[y:z])
+                    offset = 1 + int(line[y:z])
 
                     line = f.readline()
                     x = line.find('<length>')
@@ -91,9 +91,11 @@ def gen_test_ace(dataset):
                     assert line.find('</annotation>')
 
                     offset = max(1,offset-10)
-                    while (cur_doc_text[offset:offset+length-1] != cur_mention):
+                    while (cur_doc_text[offset:offset+length] != cur_mention):
+                        print(cur_mention + ' ---> ' + cur_doc_text[offset:offset + length - 1])
+                        offset = offset + 1
 
-
+                    cur_mention = preprocess_mention(cur_mention)
 
 
 

@@ -1,4 +1,4 @@
-## Loads the link disambiguation index from Wikipedia
+# Loads the link disambiguation index from Wikipedia
 import torch
 import Utils.utils
 
