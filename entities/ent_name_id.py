@@ -12,6 +12,7 @@ import torch
 import os
 import entities.relatedness
 
+unk_ent_wikiid = 1
 rltd_only = False
 ent_type = 'RLTD'
 if ent_type and ent_type!='ALL':
@@ -56,9 +57,30 @@ else:
             ent_name = parts[0]
             ent_wikiid = int(parts[1])
 
-        if not wdpi.wiki_disambiguation_index[ent_wikiid]:
-            if not rltd_only or
+            if not ent_wikiid in wdpi.wiki_disambiguation_index:
+                if not rltd_only or True :
+                    ent_wikiid2name[ent_wikiid] = ent_name
+                    ent_name2wikiid[ent_name] = ent_wikiid
+                    e_id_name['ent_wikiid2name'] = ent_wikiid2name
+                    e_id_name['ent_name2wikiid'] = ent_name2wikiid
+                if not rltd_only:
+                    cnt = cnt + 1
+                    e_id_name['ent_wikiid2thid'][ent_wikiid] = cnt
+                    e_id_name['ent_thid2wikiid'][cnt] = ent_wikiid
+    if not rltd_only:
+        cnt = cnt + 1
+        e_id_name['ent_wikiid2thid'][ent_wikiid] = cnt
+        e_id_name['ent_thid2wikiid'][cnt] = ent_wikiid
 
+    e_id_name['ent_wikiid2name'][unk_ent_wikiid] = 'UNK_ENT'
+    e_id_name['ent_name2wikiid']['UNK_ENT'] = unk_ent_wikiid
+
+    torch.save(e_id_name,entity_wiki_t7filename)
+
+if not rltd_only:
+    unk_ent_wikiid = e_id_name['ent_wikiid2thid'][unk_ent_wikiid]
+else:
+    unk_ent_wikiid = 1 # 之后再写
 
 
 

@@ -17,7 +17,7 @@ assert wiki_redirects_index['Hosford, FL'] == 'Hosford, Florida'
 print('    Done loading redirects index')
 
 def get_redirected_ent_title(ent_name):
-    if wiki_redirects_index[ent_name]:
+    if ent_name in wiki_redirects_index.keys():
         return wiki_redirects_index[ent_name]
     else:
         return ent_name

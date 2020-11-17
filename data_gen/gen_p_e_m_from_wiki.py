@@ -25,4 +25,4 @@ with open(path,'r',encoding='utf8') as f:
                   ' . Num valid hyperlinks= '+str(num_valid_hyperlinks))
 
         if not line.find('<doc id="'):
-            list_hyp, text, le_errs, p_errs, dis_errs, diez_errs = pkd.extract_text_and_hyp(line, false)
+            list_hyp, text, le_errs, p_errs, dis_errs, diez_errs = pkd.extract_text_and_hyp(line, False)

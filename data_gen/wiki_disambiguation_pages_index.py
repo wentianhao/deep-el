@@ -5,8 +5,8 @@ import Utils.utils
 data_dir = '/home/wenh/'
 path = 'basic_data/wiki_disambiguation_pages.txt'
 print('==> Loading disambiguation index')
+wiki_disambiguation_index = {}
 with open(data_dir+path,'r',encoding='utf8') as f:
-    wiki_disambiguation_index = {}
     for line in f:
         parts = line.split('\t')
         assert int(parts[0])
