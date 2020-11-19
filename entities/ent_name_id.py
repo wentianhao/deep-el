@@ -98,7 +98,12 @@ def preprocess_ent_name(ent_name):
 def get_ent_wikiid_from_name(ent_name,not_verbose):
     verbose = (not not_verbose)
     ent_name = preprocess_ent_name(ent_name)
-    ent_wikiid = e_id_name
+    ent_wikiid = e_id_name['ent_name2wikiid'][ent_name]
+    if not ent_wikiid or not ent_name:
+        if verbose:
+            print('Entity '+ent_name+' not found. Redirects file needs to be loaded for better performance.')
+        return unk_ent_wikiid
+    return ent_wikiid
 
 if __name__ == '__main__':
     ent_name = ' <nada &amp; ada&quot; ,dada_xml '

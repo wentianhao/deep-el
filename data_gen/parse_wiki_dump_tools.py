@@ -6,7 +6,7 @@ import entities.ent_name_id as eni
 
 
 def extract_text_and_hyp(line,mark_mentions):
-    list_hyp = {}   # (mention,entities)
+    list_hyp = []   # (mention,entities)
     text = ''
     list_ent_errors = 0
     parsing_errors = 0
@@ -15,21 +15,21 @@ def extract_text_and_hyp(line,mark_mentions):
 
     end_end_hyp = 0
     begin_end_hyp = 0
-    begin_start_hyp = line.find('<a href="')+1
-    end_start_hyp = begin_end_hyp + len('<a href="') - 1
+    begin_start_hyp = line.find('<a href="')
+    end_start_hyp = begin_start_hyp + len('<a href="')
     num_mentions = 0
 
     unk_ent_wikiid = 1
 
-    while begin_start_hyp :
-        text = text + line[end_end_hyp:begin_start_hyp-1]
-        next_quotes = line.find('">',end_start_hyp + 1)
+    while begin_start_hyp + 1 :
+        text = text + line[end_end_hyp:begin_start_hyp]
+        next_quotes = line.find('">',end_start_hyp)
         end_quotes = next_quotes + len('">') -1
         if next_quotes + 1:
-            ent_name = line[end_start_hyp+1:next_quotes]
+            ent_name = line[end_start_hyp:next_quotes]
             begin_end_hyp = line.find('</a>',end_quotes+1)
             end_end_hyp = begin_end_hyp + len('</a>')
-            if begin_end_hyp:
+            if begin_end_hyp + 1:
                 mention = line[end_quotes+1:begin_end_hyp]
                 mention_maker = False
                 good_mention = True
@@ -54,33 +54,41 @@ def extract_text_and_hyp(line,mark_mentions):
                             else:
                                 # A valid (entity,mention) pair
                                 num_mentions = num_mentions + 1
-                                list_hyp['mention'] = mention
-                                list_hyp['ent_wikiid'] = ent_wikiId
-                                list_hyp['cnt'] = num_mentions
+                                hyp = {}
+                                hyp['mention'] = mention
+                                hyp['ent_wikiid'] = ent_wikiId
+                                hyp['cnt'] = num_mentions
+                                list_hyp.append(hyp)
                                 if mark_mentions:
-                                    mark_mentions = True
+                                    mention_maker = True
                     else:
                         list_ent_errors = list_ent_errors + 1
                 if not mention_maker:
-                    text = text + ' ' + mention + ' '
+                    if text == '':
+                        text = mention
+                    else:
+                        text = text + ' ' + mention + ' '
                 else:
-                    text = text + 'MMSTART' + str(num_mentions) +' '+str(mention)+'MMEND'+str(num_mentions)+' '
+                    text = text + 'MMSTART ' + str(num_mentions) +' '+str(mention)+' MMEND '+str(num_mentions)+' '
             else:
                 parsing_errors = parsing_errors + 1
-                begin_start_hyp = 0
+                end_end_hyp = 0
+                begin_start_hyp = -1
+        else:
+            parsing_errors = parsing_errors + 1
+            begin_start_hyp = -1
+        if begin_start_hyp + 1:
+            begin_start_hyp = line.find('<a href="',end_start_hyp)
+            end_start_hyp = begin_start_hyp + len('<a href="')
 
-            if begin_start_hyp:
-                begin_start_hyp = line.find('<a href="')
-                end_start_hyp = begin_start_hyp + len('<a href="')
-
-            if end_end_hyp:
-                text = text + line[end_end_hyp:]
-            else:
-                if not mark_mentions:
-                    text = line
-                else:
-                    text = ''
-                    list_hyp = {}
+    if end_end_hyp:
+        text = text + line[end_end_hyp+1:]
+    else:
+        if not mark_mentions:
+            text = line
+        else:
+            text = ''
+            list_hyp = {}
 
     return list_hyp,text,list_ent_errors,parsing_errors,disambiguation_ent_errors,diez_ent_errors
 
@@ -90,7 +98,22 @@ if __name__ == '__main__':
     test_line_1 = '<a href="Anarchism">Anarchism</a> is a <a href="political philosophy">political philosophy</a> that advocates<a href="stateless society">stateless societies</a>often defined as <a href="self-governance">self-governed</a> voluntary institutions, but that several authors have defined as more specific institutions based on non-<a href="Hierarchy">hierarchical</a> <a href="Free association (communism and anarchism)">free associations</a>..<a href="Anarchism">Anarchism</a>'
     test_line_2 = 'CSF pressure, as measured by <a href="lumbar puncture">lumbar puncture</a> (LP), is 10-18 <a href="Pressure#H2O">'
     test_line_3 = 'Anarchism'
-    list_hype, text, list_ent_errors,parsing_errors,disambiguation_ent_errors,diez_ent_errors= extract_text_and_hyp(test_line_1, False)
+    # list_hype, text, list_ent_errors,parsing_errors,disambiguation_ent_errors,diez_ent_errors= extract_text_and_hyp(test_line_1, False)
+    # print(list_hype)
+    # print(text)
+
+    # list_hype, text, list_ent_errors, parsing_errors, disambiguation_ent_errors, diez_ent_errors= extract_text_and_hyp(test_line_1, True)
+    # print(list_hype)
+    # print(text)
+    # print()
+
+    # list_hype, text, list_ent_errors,parsing_errors,disambiguation_ent_errors,diez_ent_errors= extract_text_and_hyp(test_line_2, True)
+    # print(list_hype)
+    # print(text)
+    # print()
+
+    list_hype, text, list_ent_errors,parsing_errors,disambiguation_ent_errors,diez_ent_errors = extract_text_and_hyp(test_line_3, False)
     print(list_hype)
     print(text)
-    print()
+    # print()
+    # print('    Done unit tests.')
