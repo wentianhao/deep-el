@@ -1,5 +1,8 @@
-import data_gen.parse_wiki_dump_tools as pkd
+import sys
+sys.path.append('/home/wenh/deep-el')
+from data_gen.parse_wiki_dump_tools import extract_text_and_hyp
 from entities.ent_name_id import get_ent_name_from_wikiid
+
 data_dir = '/home/wenh/'
 num_lines = 0
 parsing_errors = 0
@@ -25,7 +28,7 @@ with open(path,'r',encoding='utf8') as f:
                   ' . Num valid hyperlinks= '+str(num_valid_hyperlinks))
 
         if not line.find('<doc id="') + 1:
-            list_hyp, text, le_errs, p_errs, dis_errs, diez_errs = pkd.extract_text_and_hyp(line, False)
+            list_hyp, text, le_errs, p_errs, dis_errs, diez_errs = extract_text_and_hyp(line, False)
             parsing_errors = parsing_errors + p_errs
             list_ent_errors = list_ent_errors + le_errs
             disambiguation_ent_errors = disambiguation_ent_errors + dis_errs
@@ -44,7 +47,7 @@ with open(path,'r',encoding='utf8') as f:
                     wiki_e_m_counts[mention][ent_wikiid] = 0
                 wiki_e_m_counts[mention][ent_wikiid]=wiki_e_m_counts[mention][ent_wikiid] + 1
 
-print('    Done computing Wikipedia p(e|m). Num valid hyperlinks = ' +num_valid_hyperlinks)
+print('    Done computing Wikipedia p(e|m). Num valid hyperlinks = ' + str(num_valid_hyperlinks))
 
 print('Now sorting and writing ..')
 out_file = data_dir + 'generated/wikipedia_p_e_m.txt'
@@ -60,13 +63,13 @@ for mention,list in wiki_e_m_counts.items():
         tbl.append(t)
     tbl = sorted(tbl,key=lambda x:x["freq"],reverse = True)
 
-    str = ''
+    strs = ''
     total_freq = 0
     for el in tbl:
-        str = str + el['ent_wikiid'] + ','+el['freq']
-        str = str + ','+ get_ent_name_from_wikiid(el['ent_wikiid'].replace(' ','_'))+'\t'
+        strs = strs + el['ent_wikiid'] + ','+el['freq']
+        strs = strs + ','+ get_ent_name_from_wikiid(el['ent_wikiid'].replace(' ','_'))+'\t'
         total_freq = total_freq + el['freq']
-    ouf.write(mention + '\t' + str(total_freq) + '\t' + str + '\n')
+    ouf.write(mention + '\t' + str(total_freq) + '\t' + strs + '\n')
 ouf.flush()
 ouf.close()
 
