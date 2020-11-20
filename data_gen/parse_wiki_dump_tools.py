@@ -40,7 +40,7 @@ def extract_text_and_hyp(line,mark_mentions):
                 if good_mention:
                     i = ent_name.find('wikt:')+1
                     if i== 1:
-                        ent_name = ent_name.sub(6)
+                        ent_name = ent_name[5:]
                     ent_name = eni.preprocess_ent_name(ent_name)
 
                     i = ent_name.find('List of ') + 1

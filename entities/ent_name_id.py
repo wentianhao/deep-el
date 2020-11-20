@@ -90,6 +90,8 @@ def preprocess_ent_name(ent_name):
     ent_name = ent_name.replace('&amp;', '&')
     ent_name = ent_name.replace('&quot;', '"')
     ent_name = ent_name.replace('_', ' ')
+    if ent_name == ' ' or ent_name == '':
+        return ent_name
     ent_name= tl.first_letter_to_uppercase(ent_name)
     if wri.get_redirected_ent_title:
         ent_name = wri.get_redirected_ent_title(ent_name)
@@ -98,12 +100,24 @@ def preprocess_ent_name(ent_name):
 def get_ent_wikiid_from_name(ent_name,not_verbose):
     verbose = (not not_verbose)
     ent_name = preprocess_ent_name(ent_name)
-    ent_wikiid = e_id_name['ent_name2wikiid'][ent_name]
+    if ent_name in e_id_name['ent_name2wikiid'].keys():
+        ent_wikiid = e_id_name['ent_name2wikiid'][ent_name]
+    else:
+        ent_wikiid = 0
     if not ent_wikiid or not ent_name:
         if verbose:
             print('Entity '+ent_name+' not found. Redirects file needs to be loaded for better performance.')
         return unk_ent_wikiid
     return ent_wikiid
+
+def get_ent_name_from_wikiid(ent_wikiid):
+    if ent_wikiid in e_id_name['ent_wikiid2name'].keys():
+        ent_name = e_id_name['ent_wikiid2name'][ent_wikiid]
+    else:
+        ent_name = 0
+    if not ent_name or not ent_wikiid:
+        return 'NIL'
+    return ent_name
 
 if __name__ == '__main__':
     ent_name = ' <nada &amp; ada&quot; ,dada_xml '
