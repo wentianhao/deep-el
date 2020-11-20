@@ -66,7 +66,7 @@ for mention,list in wiki_e_m_counts.items():
     strs = ''
     total_freq = 0
     for el in tbl:
-        strs = strs + el['ent_wikiid'] + ','+el['freq']
+        strs = strs + str(el['ent_wikiid']) + ','+str(el['freq'])
         strs = strs + ','+ get_ent_name_from_wikiid(el['ent_wikiid'].replace(' ','_'))+'\t'
         total_freq = total_freq + el['freq']
     ouf.write(mention + '\t' + str(total_freq) + '\t' + strs + '\n')
