@@ -19,7 +19,7 @@ print('\n Computing Wikipedia p_e_m')
 with open(path,'r',encoding='utf8') as f:
     for line in f:
         num_lines = num_lines + 1
-        if num_lines % 500000 == 0:
+        if num_lines % 5000000 == 0:
             print('Processed '+ str(num_lines)+
                   ' lines. Parsing errs= '+str(parsing_errors)+
                   ' List ent errs= '+str(list_ent_errors)+
@@ -54,9 +54,9 @@ out_file = data_dir + 'generated/wikipedia_p_e_m.txt'
 ouf = open(out_file,'w')
 
 
-for mention,list in wiki_e_m_counts.items():
+for mention,lst in wiki_e_m_counts.items():
     tbl = []
-    for ent_wikiid,freq in list.items():
+    for ent_wikiid,freq in lst.items():
         t = {}
         t['ent_wikiid'] = ent_wikiid
         t['freq'] = freq
@@ -67,7 +67,7 @@ for mention,list in wiki_e_m_counts.items():
     total_freq = 0
     for el in tbl:
         strs = strs + str(el['ent_wikiid']) + ','+str(el['freq'])
-        strs = strs + ','+ get_ent_name_from_wikiid(el['ent_wikiid'].replace(' ','_'))+'\t'
+        strs = strs + ','+ get_ent_name_from_wikiid(el['ent_wikiid']).replace(' ','_')+'\t'
         total_freq = total_freq + el['freq']
     ouf.write(mention + '\t' + str(total_freq) + '\t' + strs + '\n')
 ouf.flush()
