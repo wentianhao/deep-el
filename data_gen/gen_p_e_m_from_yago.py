@@ -1,3 +1,5 @@
+# Generate p(e|m) index from Wikipedia
+# Run: python data_gen/gen_p_e_m/gen_p_e_m_from_yago.py 
 import sys
 sys.path.append('/home/wenh/deep-el')
 from data_gen.unicode_map import unicode2ascii

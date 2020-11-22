@@ -26,17 +26,17 @@ Stats:
 -- 496
 '''
 import torch
-import data_gen.wiki_redirects_index
-import Utils.utils
 
-root_data_dir = '/home/wenh/'
+
+data_dir = '/home/wenh/'
 
 def gen_test_ace(dataset):
 
     print('\nGenerating test data from ' + dataset + ' set ')
 
-    path = root_data_dir + 'basic_data/test_datasets/wned-datasets/'+dataset+'/'
-    out_file = root_data_dir + 'generated/test_train_data/wned-'+dataset+'.csv'
+    path = data_dir + 'basic_data/test_datasets/wned-datasets/'+dataset+'/'
+    out_file = data_dir + 'generated/test_train_data/wned-'+dataset+'.csv'
+    ouf = open(out_file,'w')
 
     annotations = path + dataset+'.xml'
 
@@ -90,8 +90,8 @@ def gen_test_ace(dataset):
 
                     assert line.find('</annotation>')
 
-                    offset = max(1,offset-10)
-                    while (cur_doc_text[offset:offset+length] != cur_mention):
+                    offset = max(0,offset-9)
+                    while (cur_doc_text[offset:offset+length-1] != cur_mention):
                         print(cur_mention + ' ---> ' + cur_doc_text[offset:offset + length - 1])
                         offset = offset + 1
 

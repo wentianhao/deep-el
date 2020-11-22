@@ -34,18 +34,36 @@ def trim1(s):
 def first_letter_to_uppercase(s):
     return s[0].upper()+s[1:]
 
+def split_in_words(inputstr):
+    words = {}
+    # 仅匹配字母和数字
+
+
+
+
+    return words
+
+
+def modify_uppercase_phrase(s):
+    if s == s.upper():
+        words = split_in_words(s.lower())
+        res = {}
+    else:
+        return s
+
 if __name__ == '__main__':
-    one_dim = torch.rand(1,8)
+    # one_dim = torch.rand(1,8)
     # print("one_dim:",one_dim)
     # sorts , oldindices = topK(one_dim,5)
     # print("oldindices:",oldindices)
     # if not table_len:
     #     print('')
-    s = 'a<doc xAsdada'
-    x= s.find('<doc')
-    y = int(x) + len('<doc')
+    # s = 'a<doc xAsdada'
+    # x= s.find('<doc')
+    # y = int(x) + len('<doc')
     # print(x,y)
-    ss = s[0:-1]
+    # ss = s[0:-1]
     # print(ss)
-    xx = first_letter_to_uppercase(s)
-    print(xx)
+    # xx = first_letter_to_uppercase(s)
+    # print(xx)
+    s = ''
