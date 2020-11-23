@@ -35,19 +35,23 @@ def first_letter_to_uppercase(s):
     return s[0].upper()+s[1:]
 
 def split_in_words(inputstr):
-    words = {}
+    words = []
     # 仅匹配字母和数字
-
-
-
-
+    for word in re.finditer("[0-9a-zA-Z]+",inputstr):
+        words.append(word.group())
     return words
 
 
 def modify_uppercase_phrase(s):
     if s == s.upper():
         words = split_in_words(s.lower())
-        res = {}
+        res = []
+        result = ''
+        for w in words:
+            res.append(first_letter_to_uppercase(w))
+        for r in res:
+            result = r + ' ' + result
+        return result
     else:
         return s
 
@@ -66,4 +70,6 @@ if __name__ == '__main__':
     # print(ss)
     # xx = first_letter_to_uppercase(s)
     # print(xx)
-    s = ''
+    str = "123sd_456,ff,45"
+    str = str.upper()
+    print(modify_uppercase_phrase(str))

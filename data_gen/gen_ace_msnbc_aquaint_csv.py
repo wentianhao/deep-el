@@ -26,7 +26,7 @@ Stats:
 -- 496
 '''
 import torch
-
+from data_gen.yago_crosswikis_wiki import *
 
 data_dir = '/home/wenh/'
 

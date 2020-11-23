@@ -1,4 +1,7 @@
 # loads the merged p(e|m) index
+import sys
+sys.path.append('/home/wenh/deep-el')
+from Utils.utils import *
 
 ent_p_e_m_index = {}
 
@@ -22,7 +25,7 @@ with open(crosswikis_textfilename,'r',encoding='utf8') as f:
         mention = parts[0]
 
         total = int(parts[1])
-        assert total
+        # assert total
         if total >= 1:
             ent_p_e_m_index[mention] = {}
             mention_lower_to_one_upper[mention.lower()] = mention
@@ -44,7 +47,7 @@ with open(yago_textfilename,'r',encoding='utf8') as f:
     for line in f:
         num_lines = num_lines + 1
         if num_lines % 2000000 == 0:
-            print('Processed ' + num_lines + ' lines. ')
+            print('Processed ' + str(num_lines) + ' lines. ')
 
         parts = line.split('\t')
         mention = parts[0]
@@ -82,4 +85,15 @@ assert(ent_p_e_m_index['Dejan Koturovic'] and ent_p_e_m_index['Jose Luis Caminer
 
 def preprocess_mention(m):
     assert ent_p_e_m_index and mention_total_freq
-    cur_m = ''
+    cur_m = modify_uppercase_phrase(m)
+    if cur_m not in ent_p_e_m_index.keys():
+        cur_m = m
+    if m in mention_total_freq.keys() and mention_total_freq[m] > mention_total_freq[cur_m]:
+        # Cases like 'U.S.' are handed badly by modify_uppercase_phrase
+        cur_m = m
+    # if we cannot find the exact mention in our index,we try our luck to find it in a case insensitive index.
+    if cur_m not in ent_p_e_m_index.keys() and mention_lower_to_one_upper[cur_m.lower()]:
+        cur_m = mention_lower_to_one_upper[cur_m.lower()]
+    return cur_m
+
+print('    Done loading index')

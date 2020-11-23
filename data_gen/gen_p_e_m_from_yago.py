@@ -18,12 +18,16 @@ with open(path,'r',encoding='utf8') as f:
         num_lines = num_lines + 1
         if num_lines % 5000000 == 0 :
             print('Processed' + str(num_lines) + ' lines.')
+        if num_lines == 4251160:
+            print(line)
         parts = line.split('\t')
         assert len(parts) == 2
         assert  parts[0][0] == '"'
         assert parts[0][len(parts[0])-1] == '"'
 
-        mention = parts[0][1:len(parts[0])-2]
+        mention = parts[0][1:len(parts[0])-1]
+        if mention == 'DEJAN KOTUROVIC':
+            print(mention)
         ent_name = parts[1]
         ent_name = ent_name.replace('&amp;','&')
         ent_name = ent_name.replace('&quot;','"')
