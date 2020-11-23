@@ -27,6 +27,7 @@ Stats:
 '''
 import torch
 from data_gen.yago_crosswikis_wiki import *
+from entities.ent_name_id import *
 
 data_dir = '/home/wenh/'
 
@@ -97,7 +98,49 @@ def gen_test_ace(dataset):
 
                     cur_mention = preprocess_mention(cur_mention)
 
+                    if cur_ent_title != 'NIL' and cur_ent_title != '' and len(cur_ent_title) > 0:
+                        cur_ent_wikii = get_ent_wikiid_from_name(cur_ent_title)
+                        if cur_ent_wikii == unk_ent_wikiid:
+                            num_nonexistent_ent_id = num_nonexistent_ent_id + 1
+                            print(cur_ent_title)
+                        else:
+                            num_correct_ents = num_correct_ents + 1
+                        assert len(cur_mention) > 0
 
+                        strs = cur_doc_name + '\t' + cur_doc_name + '\t' + cur_mention + '\t'
+
+                        left_words = split_in_words(cur_doc_text[0:offset-1])
+                        num_left_words = len(left_words)
+                        left_ctxt = []
+                        for i in range(max(0,num_left_words-100),num_left_words):
+                            left_ctxt.append(left_words[i])
+                        if len(left_ctxt) == 0:
+                            left_ctxt.append('EMPTYCTXT')
+                        left_ctxts = ''
+                        for l_ctxt in left_ctxt:
+                            left_ctxts = left_ctxts + l_ctxt + ' '
+                        strs = strs + left_ctxts + '\t'
+
+                        right_words = split_in_words(cur_doc_text[offset+length-1])
+                        num_right_words = len(right_words)
+                        right_ctxt = []
+                        for i in range(0,min(num_right_words-1,99)):
+                            right_ctxt.append(right_words[i])
+                        if len(right_ctxt) == 0:
+                            right_ctxt.append('EMPTYCTXT')
+                        right_ctxt =''
+                        for r_ctxt in right_ctxt:
+                            right_ctxts = right_ctxts + r_ctxt + ' '
+                        strs = strs + right_ctxts + '\tCANDIDATES\t'
+
+                        # Entity candidates from p(e|m) dictionary
+                        if cur_mention in ent_p_e_m_index and len(ent_p_e_m_index[cur_mention])>0:
+                            sorted_cand = []
+                            for ent_wikiid,p in ent_p_e_m_index[cur_mention].items():
+                                cand = {}
+                                cand['ent_wikiid'] = ent_wikiid
+                                cand['p'] = p
+                                sorted_cand.append(cand)
 
             else:
                 x = line.find('document docName=\"')
