@@ -99,8 +99,8 @@ def gen_test_ace(dataset):
                     cur_mention = preprocess_mention(cur_mention)
 
                     if cur_ent_title != 'NIL' and cur_ent_title != '' and len(cur_ent_title) > 0:
-                        cur_ent_wikii = get_ent_wikiid_from_name(cur_ent_title)
-                        if cur_ent_wikii == unk_ent_wikiid:
+                        cur_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title)
+                        if cur_ent_wikiid == unk_ent_wikiid:
                             num_nonexistent_ent_id = num_nonexistent_ent_id + 1
                             print(cur_ent_title)
                         else:
@@ -141,7 +141,36 @@ def gen_test_ace(dataset):
                                 cand['ent_wikiid'] = ent_wikiid
                                 cand['p'] = p
                                 sorted_cand.append(cand)
+                            sorted_cand = sorted(sorted_cand, key=lambda x: x["p"], reverse=True)
 
+                            candidates = []
+                            gt_pos = -1
+                            pos = 0
+                            for e in sorted_cand:
+                                pos = pos + 1
+                                if pos <= 100:
+                                    candidates.append(e['ent_wikiid']+','+"{:.3f}".format(e[p])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
+                                    if e['ent_wikiid'] == cur_ent_wikiid:
+                                        gt_pos = pos
+                                else:
+                                    break
+                            total_cand = ''
+                            for candidate in candidates:
+                                total_cand = total_cand + candidate+'\t'
+                            strs = strs + total_cand + 'GT:\t'
+
+                            if gt_pos > 0:
+                                ouf.write(strs+str(gt_pos)+','+candidates[gt_pos]+'\n')
+                            else:
+                                if cur_ent_wikiid != unk_ent_wikiid:
+                                    ouf.write(strs+'-1,'+str(cur_ent_wikiid)+','+cur_ent_title+'\n')
+                                else:
+                                    ouf.write(strs+'-1\n')
+                        else:
+                            if cur_ent_wikiid != unk_ent_wikiid:
+                                ouf.write(strs+'EMPTYCAND\tGT:\t-1,'+str(cur_ent_wikiid)+','+cur_ent_title+'\n')
+                            else:
+                                ouf.write(strs+'EMPTYCAND\tGT:\t-1\n')
             else:
                 x = line.find('document docName=\"')
                 y = x + len('document docName=\"')
@@ -156,6 +185,11 @@ def gen_test_ace(dataset):
                     cur_doc_text = cur_doc_text.replace('&amp;','&')
 
             line = f.readline()
+    ouf.flush()
+    ouf.close()
+
+    print('Done '+dataset+'.')
+    print('num_nonexistent_ent_id = '+ str(num_nonexistent_ent_id) +'; num_correct_ents = '+ str(num_correct_ents))
 
 
 if __name__ == '__main__':
