@@ -92,7 +92,7 @@ def preprocess_mention(m):
         # Cases like 'U.S.' are handed badly by modify_uppercase_phrase
         cur_m = m
     # if we cannot find the exact mention in our index,we try our luck to find it in a case insensitive index.
-    if cur_m not in ent_p_e_m_index.keys() and mention_lower_to_one_upper[cur_m.lower()]:
+    if cur_m not in ent_p_e_m_index.keys() and cur_m.lower() in mention_lower_to_one_upper.keys():
         cur_m = mention_lower_to_one_upper[cur_m.lower()]
     return cur_m
 

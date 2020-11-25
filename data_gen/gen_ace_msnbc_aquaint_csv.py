@@ -25,7 +25,8 @@ Stats:
 -- cat wned-msnbc.csv | grep -P 'GT:\t1,' | wc -l
 -- 496
 '''
-import torch
+import sys
+sys.path.append('/home/wenh/deep-el')
 from data_gen.yago_crosswikis_wiki import *
 from entities.ent_name_id import *
 
@@ -75,7 +76,7 @@ def gen_test_ace(dataset):
                     y = x + len('<offset>')
                     z = line.find('</offset>')
                     t = z + len('</offset>')
-                    offset = 1 + int(line[y:z])
+                    offset = int(line[y:z])
 
                     line = f.readline()
                     x = line.find('<length>')
@@ -91,15 +92,15 @@ def gen_test_ace(dataset):
 
                     assert line.find('</annotation>')
 
-                    offset = max(0,offset-9)
-                    while (cur_doc_text[offset:offset+length-1] != cur_mention):
-                        print(cur_mention + ' ---> ' + cur_doc_text[offset:offset + length - 1])
+                    offset = max(0,offset-10)
+                    while (cur_doc_text[offset:offset+length] != cur_mention):
+                        print(cur_mention + ' ---> ' + cur_doc_text[offset:offset + length])
                         offset = offset + 1
 
                     cur_mention = preprocess_mention(cur_mention)
 
                     if cur_ent_title != 'NIL' and cur_ent_title != '' and len(cur_ent_title) > 0:
-                        cur_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title)
+                        cur_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title,False)
                         if cur_ent_wikiid == unk_ent_wikiid:
                             num_nonexistent_ent_id = num_nonexistent_ent_id + 1
                             print(cur_ent_title)
@@ -128,7 +129,7 @@ def gen_test_ace(dataset):
                             right_ctxt.append(right_words[i])
                         if len(right_ctxt) == 0:
                             right_ctxt.append('EMPTYCTXT')
-                        right_ctxt =''
+                        right_ctxts =''
                         for r_ctxt in right_ctxt:
                             right_ctxts = right_ctxts + r_ctxt + ' '
                         strs = strs + right_ctxts + '\tCANDIDATES\t'
@@ -149,7 +150,7 @@ def gen_test_ace(dataset):
                             for e in sorted_cand:
                                 pos = pos + 1
                                 if pos <= 100:
-                                    candidates.append(e['ent_wikiid']+','+"{:.3f}".format(e[p])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
+                                    candidates.append(str(e['ent_wikiid'])+','+"{:.3f}".format(e['p'])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
                                     if e['ent_wikiid'] == cur_ent_wikiid:
                                         gt_pos = pos
                                 else:
@@ -160,7 +161,7 @@ def gen_test_ace(dataset):
                             strs = strs + total_cand + 'GT:\t'
 
                             if gt_pos > 0:
-                                ouf.write(strs+str(gt_pos)+','+candidates[gt_pos]+'\n')
+                                ouf.write(strs+str(gt_pos)+','+candidates[gt_pos-1]+'\n')
                             else:
                                 if cur_ent_wikiid != unk_ent_wikiid:
                                     ouf.write(strs+'-1,'+str(cur_ent_wikiid)+','+cur_ent_title+'\n')
@@ -193,5 +194,9 @@ def gen_test_ace(dataset):
 
 
 if __name__ == '__main__':
-    gen_test_ace('wikipedia')
-
+    # gen_test_ace('wikipedia')
+    gen_test_ace('clueweb')
+    gen_test_ace('ace2004')
+    gen_test_ace('msnbc')
+    gen_test_ace('aquaint')
+    print('Done Gen ace msnbc aquaint !')

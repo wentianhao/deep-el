@@ -18,7 +18,8 @@
 # --19
 # --cat aida_testB.csv | grep -P 'GT:\t1,' | wc -l
 # --3084
-
+import sys
+sys.path.append('/home/wenh/deep-el')
 from Utils.utils import *
 from data_gen.wiki_redirects_index import *
 from data_gen.yago_crosswikis_wiki import *
@@ -136,7 +137,7 @@ with open(data_dir+'basic_data/test_datasets/AIDA/testa_testb_aggregate_original
                     cur_ent_title = parts[4][y:]
                     cur_ent_wikiid = int(parts[5])
                     index_ent_title = get_ent_name_from_wikiid(cur_ent_wikiid)
-                    index_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title)
+                    index_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title,False)
 
                     final_ent_wikiid = index_ent_wikiid
                     if final_ent_wikiid == unk_ent_wikiid:
