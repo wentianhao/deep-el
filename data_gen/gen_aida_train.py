@@ -3,10 +3,12 @@
 #
 # Format:
 # doc_name \t doc_name \t mention \t left_ctxt \t right_ctxt \t CANDIDATES \t [ent_wikiid,p_e_m,ent_name]+ \t GT: \t pos,ent_wikiid,p_e_m,ent_name
-
+import sys
+sys.path.append('/home/wenh/deep-el')
 from data_gen.wiki_redirects_index import *
 from data_gen.yago_crosswikis_wiki import *
 from Utils.utils import *
+from entities.ent_name_id import *
 
 print('\nGenerating train data from AIDA set ')
 
@@ -31,14 +33,14 @@ def write_results():
     # Write results
     if cur_doc_name != '':
         header = cur_doc_name + '\t' + cur_doc_name + '\t'
-        for hyp in cur_mentions:
+        for _,hyp in cur_mentions.items():
             assert len(hyp['mention']) > 0
             mention = hyp['mention']
             strs = header + hyp['mention']+'\t'
 
             left_ctxt = []
             for i in range(max(0,hyp['start_off']-100),hyp['start_off']-1):
-                left_ctxt.append(cur_words[i])
+                left_ctxt.append(cur_words[i-1])
             if len(left_ctxt) == 0:
                 left_ctxt.append('EMPTYCTXT')
             l_ctxts = ''
@@ -47,7 +49,7 @@ def write_results():
             strs = strs + l_ctxts + '\t'
 
             right_ctxt = []
-            for i in range(hyp['end_off'],min(cur_words_num,hyp['end_off']+100)):
+            for i in range(hyp['end_off'],min(cur_words_num,hyp['end_off']+99)):
                 right_ctxt.append(cur_words[i])
             if len(right_ctxt) == 0:
                 right_ctxt.append('EMPTYCTXT')
@@ -69,11 +71,11 @@ def write_results():
 
                     candidates = []
                     gt_pos = -1
-                    pos = 0
+                    pos = -1
                     for e in sorted_cand:
                         pos = pos + 1
-                        if pos <= 100:
-                            candidates.append(e['ent_wikiid']+','+":.3f".format(e['p'])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
+                        if pos < 100:
+                            candidates.append(str(e['ent_wikiid'])+','+"{:.3f}".format(e['p'])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
                             if e['ent_wikiid'] == hyp['ent_wikiid']:
                                 gt_pos = pos
                         else:
@@ -84,9 +86,9 @@ def write_results():
                     strs = strs + total_cand + 'GT:\t'
 
                     if gt_pos > 0:
-                        ouf.write(strs+gt_pos+','+candidates[gt_pos]+'\n')
+                        ouf.write(strs+str(gt_pos)+','+candidates[gt_pos]+'\n')
 
-with open(data_dir+'basic_data/test_datasets/AIDA/testa_testb_aggregate_original','r',encoding='utf8') as f:
+with open(data_dir+'basic_data/test_datasets/AIDA/aida_train.txt','r',encoding='utf8') as f:
     for line in f:
         if not line.find('-DOCSTART-') +1:
             parts = line.split('\t')

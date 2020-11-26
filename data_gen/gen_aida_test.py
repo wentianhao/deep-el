@@ -52,14 +52,14 @@ cur_doc_name = ''
 def write_results():
     if cur_doc_name != '':
         header = cur_doc_name + '\t' + cur_doc_name + '\t'
-        for hyp in cur_mentions:
+        for _,hyp in cur_mentions.items():
             assert len(hyp['mention']) > 0
             mention = hyp['mention']
             strs = header + hyp['mention']+'\t'
 
             left_ctxt = []
             for i in range(max(0,hyp['start_off']-100),hyp['start_off']-1):
-                left_ctxt.append(cur_words[i])
+                left_ctxt.append(cur_words[i-1])
             if len(left_ctxt) == 0:
                 left_ctxt.append('EMPTYCTXT')
             l_ctxts = ''
@@ -68,7 +68,7 @@ def write_results():
             strs = strs + l_ctxts + '\t'
 
             right_ctxt = []
-            for i in range(hyp['end_off'],min(cur_words_num,hyp['end_off']+100)):
+            for i in range(hyp['end_off'],min(cur_words_num-1,hyp['end_off']+99)):
                 right_ctxt.append(cur_words[i])
             if len(right_ctxt) == 0:
                 right_ctxt.append('EMPTYCTXT')
@@ -90,11 +90,12 @@ def write_results():
 
                     candidates = []
                     gt_pos = -1
-                    pos = 0
+                    pos = -1
                     for e in sorted_cand:
                         pos = pos + 1
-                        if pos <= 100:
-                            candidates.append(e['ent_wikiid']+','+":.3f".format(e['p'])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
+                        if pos < 100:
+                            print("{:.3f}".format(e['p']))
+                            candidates.append(str(e['ent_wikiid'])+','+"{:.3f}".format(e['p'])+','+get_ent_name_from_wikiid(e['ent_wikiid']))
                             if e['ent_wikiid'] == hyp['ent_wikiid']:
                                 gt_pos = pos
                         else:
@@ -104,16 +105,16 @@ def write_results():
                         total_cand = total_cand + candidate + '\t'
                     strs = strs + total_cand + 'GT:\t'
 
-                    if gt_pos > 0:
-                        ouf.write(strs+gt_pos+','+candidates[gt_pos]+'\n')
+                    if gt_pos >= 0:
+                        ouf.write(strs+str(gt_pos)+','+candidates[gt_pos]+'\n')
                     else:
                         if hyp['ent_wikiid'] != unk_ent_wikiid:
-                            ouf.write(strs+'-1'+hyp['ent_wikiid']+','+get_ent_name_from_wikiid(hyp['ent_wikiid'])+'\n')
+                            ouf.write(strs+'-1'+str(hyp['ent_wikiid'])+','+get_ent_name_from_wikiid(hyp['ent_wikiid'])+'\n')
                         else:
                             ouf.write(strs+'-1\n')
             else:
                 if hyp['ent_wikiid'] != unk_ent_wikiid:
-                    ouf.write(strs+'EMPTYCAND\tGT:\t-1,'+hyp['ent_wikiid']+','+get_ent_name_from_wikiid(hyp['ent_wikiid'])+'\n')
+                    ouf.write(strs+'EMPTYCAND\tGT:\t-1,'+str(hyp['ent_wikiid'])+','+get_ent_name_from_wikiid(hyp['ent_wikiid'])+'\n')
                 else:
                     ouf.write(strs+'EMPTYCAND\tGT:\t-1\n')
 
@@ -175,9 +176,9 @@ with open(data_dir+'basic_data/test_datasets/AIDA/testa_testb_aggregate_original
             if cur_doc_name.find('testa')+1 and line.find('testb')+1:
                 ouf = ouf_B
                 print('Done validation testA : ')
-                print('num_nme = '+str(num_nme) + '; num_nonexistent_ent_title = ' + num_nonexistent_ent_title)
-                print('num_nonexistent_ent_id = '+num_nonexistent_ent_id + '; num_nonexistent_both = ' + num_nonexistent_both)
-                print('num_correct_ents = ' + num_correct_ents + '; num_total_ents = ' + num_total_ents)
+                print('num_nme = '+str(num_nme) + '; num_nonexistent_ent_title = ' + str(num_nonexistent_ent_title))
+                print('num_nonexistent_ent_id = '+str(num_nonexistent_ent_id) + '; num_nonexistent_both = ' + str(num_nonexistent_both))
+                print('num_correct_ents = ' + str(num_correct_ents) + '; num_total_ents = ' + str(num_total_ents))
 
             words = split_in_words(line)
             for w in words:
