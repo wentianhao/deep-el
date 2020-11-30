@@ -1,3 +1,4 @@
+# Generate p(e|m) index from Wikipedia
 import sys
 sys.path.append('/home/wenh/deep-el')
 from data_gen.parse_wiki_dump_tools import extract_text_and_hyp

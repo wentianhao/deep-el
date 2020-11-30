@@ -5,18 +5,16 @@ b) a Wikipedia ID refferred as 'ent_wikiid' or 'wikiid' here
 c) an ID that will be used in the entity embeddings lookup table. Referred as 'ent_thid' or 'thid' there
 '''
 
-import Utils.utils as tl
-import data_gen.wiki_redirects_index as wri
-import data_gen.wiki_disambiguation_pages_index as wdpi
+from Utils.utils import *
+from data_gen.wiki_redirects_index import *
 import torch
 import os
-import entities.relatedness
 
 unk_ent_wikiid = 1
 rltd_only = False
-ent_type = 'RLTD'
-if ent_type and ent_type != 'ALL':
-    rltd_only = True
+# ent_type = 'RLTD'
+# if ent_type and ent_type != 'ALL':
+#     rltd_only = True
 
 # Unk entity wikiid
 unk_ent_wikiid = 1
@@ -28,27 +26,26 @@ if rltd_only:
 
 print('==> Loading entities wikiid - name map')
 
-e_id_name = None
+e_id_name = 0
 
 if os.path.exists(entity_wiki_t7filename):
     print(' ---> from t7 file: ' + entity_wiki_t7filename)
     e_id_name = torch.load(entity_wiki_t7filename)
 else:
     print('  ---> t7 file NOT found. Loading from disk (slower). Out f = ' + entity_wiki_t7filename)
-    import data_gen.wiki_disambiguation_pages_index as wdpi
-
+    from data_gen.wiki_disambiguation_pages_index import *
     print('    Still loading entities wikiid - name map ...')
 
     e_id_name = {}
 
     # map for entity name to entity wiki id
-    ent_wikiid2name = {}
-    ent_name2wikiid = {}
+    e_id_name['ent_wikiid2name'] = {}
+    e_id_name['ent_name2wikiid'] = {}
 
     # map for entity wiki id to tensor id. Size = 4.4M
     if not rltd_only:
-        ent_wikiid2thid = {}
-        ent_thid2wikiid = {}
+        e_id_name['ent_wikiid2thid'] = {}
+        e_id_name['ent_thid2wikiid'] = {}
 
     cnt = 0
     cnt_freq = 0
@@ -58,20 +55,18 @@ else:
             ent_name = parts[0]
             ent_wikiid = int(parts[1])
 
-            if not ent_wikiid in wdpi.wiki_disambiguation_index:
+            if not ent_wikiid in wiki_disambiguation_index.keys():
                 if not rltd_only or True:
-                    ent_wikiid2name[ent_wikiid] = ent_name
-                    ent_name2wikiid[ent_name] = ent_wikiid
-                    e_id_name['ent_wikiid2name'] = ent_wikiid2name
-                    e_id_name['ent_name2wikiid'] = ent_name2wikiid
+                    e_id_name['ent_wikiid2name'][ent_wikiid] = ent_name
+                    e_id_name['ent_name2wikiid'][ent_name] = ent_wikiid
                 if not rltd_only:
                     cnt = cnt + 1
                     e_id_name['ent_wikiid2thid'][ent_wikiid] = cnt
                     e_id_name['ent_thid2wikiid'][cnt] = ent_wikiid
     if not rltd_only:
         cnt = cnt + 1
-        e_id_name['ent_wikiid2thid'][ent_wikiid] = cnt
-        e_id_name['ent_thid2wikiid'][cnt] = ent_wikiid
+        e_id_name['ent_wikiid2thid'][unk_ent_wikiid] = cnt
+        e_id_name['ent_thid2wikiid'][cnt] = unk_ent_wikiid
 
     e_id_name['ent_wikiid2name'][unk_ent_wikiid] = 'UNK_ENT'
     e_id_name['ent_name2wikiid']['UNK_ENT'] = unk_ent_wikiid
@@ -85,15 +80,15 @@ else:
 
 
 def preprocess_ent_name(ent_name):
-    ent_name = tl.trim1(ent_name)
+    ent_name = trim1(ent_name)
     ent_name = ent_name.replace('&amp;', '&')
     ent_name = ent_name.replace('&quot;', '"')
     ent_name = ent_name.replace('_', ' ')
     if ent_name == ' ' or ent_name == '':
         return ent_name
-    ent_name = tl.first_letter_to_uppercase(ent_name)
-    if wri.get_redirected_ent_title:
-        ent_name = wri.get_redirected_ent_title(ent_name)
+    ent_name = first_letter_to_uppercase(ent_name)
+    if get_redirected_ent_title:
+        ent_name = get_redirected_ent_title(ent_name)
     return ent_name
 
 

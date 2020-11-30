@@ -1,8 +1,6 @@
 # Utility functions to extract the text and hyperlinks from each page in the Wikipedia corpus.
 # 提取文本和超链接
-
-import Utils.utils
-import entities.ent_name_id as eni
+from entities.ent_name_id import *
 
 
 def extract_text_and_hyp(line,mark_mentions):
@@ -19,15 +17,13 @@ def extract_text_and_hyp(line,mark_mentions):
     end_start_hyp = begin_start_hyp + len('<a href="')
     num_mentions = 0
 
-    unk_ent_wikiid = 1
-
     while begin_start_hyp + 1 :
         text = text + line[end_end_hyp:begin_start_hyp]
         next_quotes = line.find('">',end_start_hyp)
         end_quotes = next_quotes + len('">') -1
         if next_quotes + 1:
             ent_name = line[end_start_hyp:next_quotes]
-            begin_end_hyp = line.find('</a>',end_quotes+1)
+            begin_end_hyp = line.find('</a>',end_quotes)
             end_end_hyp = begin_end_hyp + len('</a>')
             if begin_end_hyp + 1:
                 mention = line[end_quotes+1:begin_end_hyp]
@@ -41,14 +37,14 @@ def extract_text_and_hyp(line,mark_mentions):
                     i = ent_name.find('wikt:')+1
                     if i== 1:
                         ent_name = ent_name[5:]
-                    ent_name = eni.preprocess_ent_name(ent_name)
+                    ent_name = preprocess_ent_name(ent_name)
 
                     i = ent_name.find('List of ') + 1
                     if (not i) or(i !=1):
                         if ent_name.find('#')+1:
                             diez_ent_errors = diez_ent_errors +1
                         else:
-                            ent_wikiId = eni.get_ent_wikiid_from_name(ent_name,True)
+                            ent_wikiId = get_ent_wikiid_from_name(ent_name,True)
                             if ent_wikiId == unk_ent_wikiid:
                                 disambiguation_ent_errors = disambiguation_ent_errors + 1
                             else:
