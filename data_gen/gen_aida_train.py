@@ -23,7 +23,7 @@ num_correct_ents = 0
 num_total_ents = 0
 
 cur_words_num = 0
-cur_words = {}
+cur_words = []
 cur_mentions = {}
 cur_mentions_num = 0
 
@@ -59,10 +59,10 @@ def write_results():
             strs = strs + r_ctxts + '\tCANDIDATES\t'
 
             # Entity candidates from p(e|m) dictionary
-            if mention in ent_p_e_m_index.keys():
-                if len(ent_p_e_m_index[mention]) >0:
+            if hyp['mention'] in ent_p_e_m_index.keys():
+                if len(ent_p_e_m_index[hyp['mention']]) >0:
                     sorted_cand = []
-                    for ent_wikiid,p in ent_p_e_m_index[mention].items():
+                    for ent_wikiid,p in ent_p_e_m_index[hyp['mention']].items():
                         cand = {}
                         cand['ent_wikiid'] = ent_wikiid
                         cand['p'] = p
@@ -85,7 +85,7 @@ def write_results():
                         total_cand = total_cand + candidate + '\t'
                     strs = strs + total_cand + 'GT:\t'
 
-                    if gt_pos > 0:
+                    if gt_pos >= 0:
                         ouf.write(strs+str(gt_pos)+','+candidates[gt_pos]+'\n')
 
 with open(data_dir+'basic_data/test_datasets/AIDA/aida_train.txt','r',encoding='utf8') as f:
@@ -107,7 +107,7 @@ with open(data_dir+'basic_data/test_datasets/AIDA/aida_train.txt','r',encoding='
                     cur_ent_title = parts[4][y:]
                     cur_ent_wikiid = int(parts[5])
                     index_ent_title = get_ent_name_from_wikiid(cur_ent_wikiid)
-                    index_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title)
+                    index_ent_wikiid = get_ent_wikiid_from_name(cur_ent_title,False)
 
                     final_ent_wikiid = index_ent_wikiid
                     if final_ent_wikiid == unk_ent_wikiid:
@@ -142,7 +142,7 @@ with open(data_dir+'basic_data/test_datasets/AIDA/aida_train.txt','r',encoding='
             assert line.find('-DOCSTART-')+1
             write_results()
 
-            cur_doc_name = line[12:]
+            cur_doc_name = line[12:].strip()
 
             cur_words = []
             cur_words_num = 0
