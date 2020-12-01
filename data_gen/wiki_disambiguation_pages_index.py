@@ -1,6 +1,4 @@
 # Loads the link disambiguation index from Wikipedia
-import torch
-import Utils.utils
 
 data_dir = '/home/wenh/'
 path = 'basic_data/wiki_disambiguation_pages.txt'

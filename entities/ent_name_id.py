@@ -7,6 +7,7 @@ c) an ID that will be used in the entity embeddings lookup table. Referred as 'e
 
 from Utils.utils import *
 from data_gen.wiki_redirects_index import *
+from entities.relatedness import *
 import torch
 import os
 
@@ -56,7 +57,7 @@ else:
             ent_wikiid = int(parts[1])
 
             if not ent_wikiid in wiki_disambiguation_index.keys():
-                if not rltd_only or True:
+                if not rltd_only or rewtr['reltd_ents_wikiid_to_rltdid'][ent_wikiid]:
                     e_id_name['ent_wikiid2name'][ent_wikiid] = ent_name
                     e_id_name['ent_name2wikiid'][ent_name] = ent_wikiid
                 if not rltd_only:
@@ -76,7 +77,7 @@ else:
 if not rltd_only:
     unk_ent_wikiid = e_id_name['ent_wikiid2thid'][unk_ent_wikiid]
 else:
-    unk_ent_wikiid = 1  # 之后再写
+    unk_ent_wikiid = rewtr['reltd_ents_wikiid_to_rltdid'][unk_ent_wikiid]  # 之后再写
 
 
 def preprocess_ent_name(ent_name):
@@ -107,7 +108,7 @@ def get_ent_wikiid_from_name(ent_name, not_verbose):
 
 
 def get_ent_name_from_wikiid(ent_wikiid):
-    if ent_wikiid in e_id_name['ent_wikiid2name'].keys():
+    if e_id_name['ent_wikiid2name'].get(ent_wikiid):
         ent_name = e_id_name['ent_wikiid2name'][ent_wikiid]
     else:
         ent_name = 0
