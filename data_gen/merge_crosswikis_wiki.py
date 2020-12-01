@@ -1,5 +1,4 @@
 # Merge Wikipedia and Crosswikis p(e|m) indexes
-# Run: python data_gen/gen_p_e_m/merge_crosswikis_wiki.py
 
 import sys
 sys.path.append('/home/wenh/deep-el')
@@ -19,7 +18,7 @@ with open(path,'r',encoding='utf8') as f:
         mention = parts[0]
 
         if not mention.find('Wikipedia') + 1 and not mention.find('wikipedia') + 1:
-            if mention not in merged_e_m_counts.keys():
+            if not merged_e_m_counts.get(mention):
                 merged_e_m_counts[mention] = {}
 
             total_freq = int(parts[1])
@@ -32,9 +31,8 @@ with open(path,'r',encoding='utf8') as f:
                 freq = int(ent_str[1])
                 assert freq
 
-                if ent_wikiid not in merged_e_m_counts[mention].keys():
+                if not merged_e_m_counts[mention].get(ent_wikiid):
                     merged_e_m_counts[mention][ent_wikiid] = 0
-
                 merged_e_m_counts[mention][ent_wikiid] = merged_e_m_counts[mention][ent_wikiid] + freq
 
 print('Process Crosswikis')
@@ -46,7 +44,7 @@ with open(path_cross,'r',encoding='utf8') as f:
         parts = line.split('\t')
         mention = parts[0]
         if not mention.find('Wikipedia')+1 and not mention.find('wikipedia')+1:
-            if mention not in merged_e_m_counts.keys():
+            if not merged_e_m_counts.get(mention):
                 merged_e_m_counts[mention] = {}
 
             total_freq = int(parts[1])
@@ -59,7 +57,7 @@ with open(path_cross,'r',encoding='utf8') as f:
                 freq = int(ent_str[1])
                 assert freq
 
-                if ent_wikiid not in merged_e_m_counts[mention].keys():
+                if not merged_e_m_counts[mention].get(ent_wikiid):
                     merged_e_m_counts[mention][ent_wikiid] = 0
                 merged_e_m_counts[mention][ent_wikiid]=merged_e_m_counts[mention][ent_wikiid] + freq
 
@@ -71,9 +69,7 @@ for mention,lst in merged_e_m_counts.items():
     if len(mention) >= 1 :
         tbl = []
         for ent_wikiid,freq in lst.items():
-            t = {}
-            t['ent_wikiid'] = ent_wikiid
-            t['freq'] = freq
+            t = {'ent_wikiid': ent_wikiid, 'freq': freq}
             tbl.append(t)
         tbl = sorted(tbl, key=lambda x: x["freq"], reverse=True)
 

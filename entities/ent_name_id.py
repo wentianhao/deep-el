@@ -118,7 +118,7 @@ def get_ent_name_from_wikiid(ent_wikiid):
 
 
 def is_valid_ent(ent_wikiid):
-    if ent_wikiid in e_id_name['ent_wikiid2name']:
+    if e_id_name['ent_wikiid2name'].get(ent_wikiid):
         return True
     return False
 
