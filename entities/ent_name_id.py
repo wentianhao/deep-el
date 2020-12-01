@@ -96,7 +96,7 @@ def preprocess_ent_name(ent_name):
 def get_ent_wikiid_from_name(ent_name, not_verbose):
     verbose = (not not_verbose)
     ent_name = preprocess_ent_name(ent_name)
-    if ent_name in e_id_name['ent_name2wikiid'].keys():
+    if e_id_name['ent_name2wikiid'].get(ent_name):
         ent_wikiid = e_id_name['ent_name2wikiid'][ent_name]
     else:
         ent_wikiid = 0
