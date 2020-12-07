@@ -193,7 +193,7 @@ def gen_test_ace(dataset):
 
 if __name__ == '__main__':
     gen_test_ace('wikipedia')
-    print('Done wikipedia !')
+    # print('Done wikipedia !')
     gen_test_ace('clueweb')
     print('Done clueweb !')
     gen_test_ace('ace2004')
