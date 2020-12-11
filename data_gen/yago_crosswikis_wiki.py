@@ -32,7 +32,7 @@ with open(crosswikis_textfilename, 'r', encoding='utf8') as f:
             mention_lower_to_one_upper[mention.lower()] = mention
             mention_total_freq[mention] = total
             num_parts = len(parts)
-            for i in range(2, num_parts - 1):
+            for i in range(2, num_parts):
                 ent_str = parts[i].split(',')
                 ent_wikiid = int(ent_str[0])
                 assert ent_wikiid
@@ -64,7 +64,7 @@ with open(yago_textfilename, 'r', encoding='utf8') as f:
 
             yago_ment_ent_idx = {}
             num_parts = len(parts)
-            for i in range(2, num_parts - 1):
+            for i in range(2, num_parts):
                 ent_str = parts[i].split(',')
                 ent_wikiid = int(ent_str[0])
                 freq = 1

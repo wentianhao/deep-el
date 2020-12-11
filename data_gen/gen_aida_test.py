@@ -68,8 +68,8 @@ def write_results():
             strs = strs + l_ctxts + '\t'
 
             right_ctxt = []
-            for i in range(hyp['end_off'], min(cur_words_num - 1, hyp['end_off'] + 99)):
-                right_ctxt.append(cur_words[i])
+            for i in range(hyp['end_off']+1, min(cur_words_num, hyp['end_off'] + 100)):
+                right_ctxt.append(cur_words[i-1])
             if len(right_ctxt) == 0:
                 right_ctxt.append('EMPTYCTXT')
             r_ctxts = ''
@@ -87,10 +87,9 @@ def write_results():
 
                 candidates = []
                 gt_pos = -1
-                pos = -1
-                for e in sorted_cand:
-                    pos = pos + 1
-                    if pos < 100:
+                for pos,e in enumerate(sorted_cand):
+                    print(pos)
+                    if pos <= 100:
                         candidates.append(
                             str(e['ent_wikiid']) + ',' + "{:.3f}".format(e['p']) + ',' + get_ent_name_from_wikiid(
                                 e['ent_wikiid']))
@@ -103,8 +102,8 @@ def write_results():
                     total_cand = total_cand + candidate + '\t'
                 strs = strs + total_cand + 'GT:\t'
 
-                if gt_pos >= 0:
-                    ouf.write(strs + str(gt_pos) + ',' + candidates[gt_pos] + '\n')
+                if gt_pos > 0:
+                    ouf.write(strs + str(gt_pos) + ',' + candidates[gt_pos-1] + '\n')
                 else:
                     if hyp['ent_wikiid'] != unk_ent_wikiid:
                         ouf.write(strs + '-1' + str(hyp['ent_wikiid']) + ',' + get_ent_name_from_wikiid(
