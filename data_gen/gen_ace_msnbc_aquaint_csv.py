@@ -142,10 +142,8 @@ def gen_test_ace(dataset):
 
                             candidates = []
                             gt_pos = -1
-                            pos = -1
-                            for e in sorted_cand:
-                                pos = pos + 1
-                                if pos < 100:
+                            for pos,e in enumerate(sorted_cand):
+                                if pos <= 100:
                                     candidates.append(str(e['ent_wikiid']) + ',' + "{:.3f}".format(
                                         e['p']) + ',' + get_ent_name_from_wikiid(e['ent_wikiid']))
                                     if e['ent_wikiid'] == cur_ent_wikiid:
