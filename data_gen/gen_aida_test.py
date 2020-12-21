@@ -58,8 +58,11 @@ def write_results():
             strs = header + hyp['mention'] + '\t'
 
             left_ctxt = []
-            for i in range(max(0, hyp['start_off'] - 100), hyp['start_off'] - 1):
-                left_ctxt.append(cur_words[i - 1])
+            for i in range(max(0, hyp['start_off'] - 100)-1, hyp['start_off'] - 1):
+                if i < 0:
+                    left_ctxt = []
+                else:
+                    left_ctxt.append(cur_words[i])
             if len(left_ctxt) == 0:
                 left_ctxt.append('EMPTYCTXT')
             l_ctxts = ''
@@ -68,8 +71,11 @@ def write_results():
             strs = strs + l_ctxts + '\t'
 
             right_ctxt = []
-            for i in range(hyp['end_off']+1, min(cur_words_num, hyp['end_off'] + 100)):
-                right_ctxt.append(cur_words[i-1])
+            for i in range(hyp['end_off'], min(cur_words_num, hyp['end_off'] + 100)):
+                if i > len(cur_words):
+                    right_ctxt = []
+                else:
+                    right_ctxt.append(cur_words[i])
             if len(right_ctxt) == 0:
                 right_ctxt.append('EMPTYCTXT')
             r_ctxts = ''
@@ -89,7 +95,7 @@ def write_results():
                 gt_pos = -1
                 for pos,e in enumerate(sorted_cand):
                     print(pos)
-                    if pos <= 100:
+                    if pos <= 99:
                         candidates.append(
                             str(e['ent_wikiid']) + ',' + "{:.3f}".format(e['p']) + ',' + get_ent_name_from_wikiid(
                                 e['ent_wikiid']))
@@ -102,8 +108,8 @@ def write_results():
                     total_cand = total_cand + candidate + '\t'
                 strs = strs + total_cand + 'GT:\t'
 
-                if gt_pos > 0:
-                    ouf.write(strs + str(gt_pos) + ',' + candidates[gt_pos-1] + '\n')
+                if gt_pos >= 0:
+                    ouf.write(strs + str(gt_pos) + ',' + candidates[gt_pos] + '\n')
                 else:
                     if hyp['ent_wikiid'] != unk_ent_wikiid:
                         ouf.write(strs + '-1' + str(hyp['ent_wikiid']) + ',' + get_ent_name_from_wikiid(

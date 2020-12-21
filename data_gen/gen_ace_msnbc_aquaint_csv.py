@@ -120,10 +120,10 @@ def gen_test_ace(dataset):
                             left_ctxts = left_ctxts + l_ctxt + ' '
                         strs = strs + left_ctxts + '\t'
 
-                        right_words = split_in_words(cur_doc_text[offset + length:])
+                        right_words = split_in_words(cur_doc_text[offset + length-1:])
                         num_right_words = len(right_words)
                         right_ctxt = []
-                        for i in range(0, min(num_right_words - 1, 99)):
+                        for i in range(0, min(num_right_words , 100)):
                             right_ctxt.append(right_words[i])
                         if len(right_ctxt) == 0:
                             right_ctxt.append('EMPTYCTXT')
@@ -143,7 +143,7 @@ def gen_test_ace(dataset):
                             candidates = []
                             gt_pos = -1
                             for pos,e in enumerate(sorted_cand):
-                                if pos <= 100:
+                                if pos <= 99:
                                     candidates.append(str(e['ent_wikiid']) + ',' + "{:.3f}".format(
                                         e['p']) + ',' + get_ent_name_from_wikiid(e['ent_wikiid']))
                                     if e['ent_wikiid'] == cur_ent_wikiid:

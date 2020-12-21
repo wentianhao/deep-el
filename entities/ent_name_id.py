@@ -56,7 +56,7 @@ else:
             ent_name = parts[0]
             ent_wikiid = int(parts[1])
 
-            if not ent_wikiid in wiki_disambiguation_index.keys():
+            if not wiki_disambiguation_index.get(ent_wikiid):
                 if not rltd_only or rewtr['reltd_ents_wikiid_to_rltdid'][ent_wikiid]:
                     e_id_name['ent_wikiid2name'][ent_wikiid] = ent_name
                     e_id_name['ent_name2wikiid'][ent_name] = ent_wikiid
@@ -75,9 +75,9 @@ else:
     torch.save(e_id_name, entity_wiki_t7filename)
 
 if not rltd_only:
-    unk_ent_wikiid = e_id_name['ent_wikiid2thid'][unk_ent_wikiid]
+    unk_ent_thid = e_id_name['ent_wikiid2thid'][unk_ent_wikiid]
 else:
-    unk_ent_wikiid = rewtr['reltd_ents_wikiid_to_rltdid'][unk_ent_wikiid]  # 之后再写
+    unk_ent_thid = rewtr['reltd_ents_wikiid_to_rltdid'][unk_ent_wikiid]  # 之后再写
 
 
 def preprocess_ent_name(ent_name):
@@ -96,10 +96,7 @@ def preprocess_ent_name(ent_name):
 def get_ent_wikiid_from_name(ent_name, not_verbose):
     verbose = (not not_verbose)
     ent_name = preprocess_ent_name(ent_name)
-    if e_id_name['ent_name2wikiid'].get(ent_name):
-        ent_wikiid = e_id_name['ent_name2wikiid'][ent_name]
-    else:
-        ent_wikiid = 0
+    ent_wikiid = e_id_name['ent_name2wikiid'].get(ent_name)
     if not ent_wikiid or not ent_name:
         if verbose:
             print('Entity ' + ent_name + ' not found. Redirects file needs to be loaded for better performance.')
@@ -108,10 +105,7 @@ def get_ent_wikiid_from_name(ent_name, not_verbose):
 
 
 def get_ent_name_from_wikiid(ent_wikiid):
-    if e_id_name['ent_wikiid2name'].get(ent_wikiid):
-        ent_name = e_id_name['ent_wikiid2name'][ent_wikiid]
-    else:
-        ent_name = 0
+    ent_name = e_id_name['ent_wikiid2name'].get(ent_wikiid)
     if not ent_name or not ent_wikiid:
         return 'NIL'
     return ent_name
@@ -122,7 +116,14 @@ def is_valid_ent(ent_wikiid):
         return True
     return False
 
+def get_total_num_ents():
+    if rltd_only:
+        assert len(rewtr['reltd_ents_wikiid_to_rltdid'])==rewtr['num_rltd_ents']
+        return len(rewtr['reltd_ents_wikiid_to_rltdid'])
+    else:
+        return len(e_id_name['ent_thid2wikiid'])
 
+print('    Done loading entity name - wikiid. Size thid index = ' + str(get_total_num_ents()))
 if __name__ == '__main__':
     ent_name = ' <nada &amp; ada&quot; ,dada_xml '
     # preprocess_ent_name(ent_name)

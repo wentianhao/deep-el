@@ -82,6 +82,7 @@ if __name__ == '__main__':
     reltd_ents_direct_validate = extract_reltd_ents(reltd_validate)
     reltd_ents_direct_test = extract_reltd_ents(reltd_test)
 
+    rewtr = {}
     print('==> Loading relatedness thid tensor')
     if not os.path.exists(rewtr_t7filename):
         print('  ---> t7 file NOT found. Loading reltd_ents_wikiid_to_rltdid from txt file instead (slower).')
@@ -135,7 +136,7 @@ if __name__ == '__main__':
         for rltd_id, wikiid in enumerate(sorted_rltd_all_ent_wikiids):
             reltd_ents_wikiid_to_rltdid[wikiid] = rltd_id
 
-        rewtr = {}
+
         rewtr['reltd_ents_wikiid_to_rltdid'] = reltd_ents_wikiid_to_rltdid
         rewtr['reltd_ents_rltdid_to_wikiid'] = sorted_rltd_all_ent_wikiids
         rewtr['num_rltd_ents'] = len(sorted_rltd_all_ent_wikiids)

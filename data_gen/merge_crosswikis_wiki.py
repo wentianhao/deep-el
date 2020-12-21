@@ -14,7 +14,7 @@ path = data_dir + 'generated/wikipedia_p_e_m.txt'
 
 with open(path,'r',encoding='utf8') as f:
     for line in f:
-        parts = line.split('\t')
+        parts = line.rstrip().split('\t')
         mention = parts[0]
 
         if not mention.find('Wikipedia') + 1 and not mention.find('wikipedia') + 1:
@@ -24,7 +24,7 @@ with open(path,'r',encoding='utf8') as f:
             total_freq = int(parts[1])
             assert total_freq
             num_ents = len(parts)
-            for i in range(2,num_ents-1):
+            for i in range(2,num_ents):
                 ent_str = parts[i].split(',')
                 ent_wikiid = int(ent_str[0])
                 assert ent_wikiid
@@ -50,7 +50,7 @@ with open(path_cross,'r',encoding='utf8') as f:
             total_freq = int(parts[1])
             assert total_freq
             num_ents = len(parts)
-            for i in range(2,num_ents-1):
+            for i in range(2,num_ents):
                 ent_str = parts[i].split(',')
                 ent_wikiid = int(ent_str[0])
                 assert ent_wikiid

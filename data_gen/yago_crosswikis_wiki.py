@@ -22,7 +22,7 @@ with open(crosswikis_textfilename, 'r', encoding='utf8') as f:
         if num_lines % 2000000 == 0:
             print('Processed ' + str(num_lines) + ' lines. ')
 
-        parts = line.split('\t')
+        parts = line.rstrip().split('\t')
         mention = parts[0]
 
         total = int(parts[1])
@@ -50,7 +50,7 @@ with open(yago_textfilename, 'r', encoding='utf8') as f:
         if num_lines % 2000000 == 0:
             print('Processed ' + str(num_lines) + ' lines. ')
 
-        parts = line.split('\t')
+        parts = line.rstrip().split('\t')
         mention = parts[0]
         total = int(parts[1])
         assert total
