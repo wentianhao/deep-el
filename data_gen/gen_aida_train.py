@@ -38,8 +38,11 @@ def write_results():
             strs = header + hyp['mention'] + '\t'
 
             left_ctxt = []
-            for i in range(max(0, hyp['start_off'] - 100), hyp['start_off'] - 1):
-                left_ctxt.append(cur_words[i - 1])
+            for i in range(max(0, hyp['start_off'] - 100)-1, hyp['start_off'] - 1):
+                if i < 0:
+                    left_ctxt = []
+                else:
+                    left_ctxt.append(cur_words[i])
             if len(left_ctxt) == 0:
                 left_ctxt.append('EMPTYCTXT')
             l_ctxts = ''
@@ -48,8 +51,11 @@ def write_results():
             strs = strs + l_ctxts + '\t'
 
             right_ctxt = []
-            for i in range(hyp['end_off'], min(cur_words_num - 1, hyp['end_off'] + 99)):
-                right_ctxt.append(cur_words[i])
+            for i in range(hyp['end_off'], min(cur_words_num, hyp['end_off'] + 100)):
+                if i > len(cur_words):
+                    right_ctxt = []
+                else:
+                    right_ctxt.append(cur_words[i])
             if len(right_ctxt) == 0:
                 right_ctxt.append('EMPTYCTXT')
             r_ctxts = ''
@@ -67,9 +73,7 @@ def write_results():
 
                 candidates = []
                 gt_pos = -1
-                pos = -1
-                for e in sorted_cand:
-                    pos = pos + 1
+                for pos,e in enumerate(sorted_cand):
                     if pos < 100:
                         candidates.append(
                             str(e['ent_wikiid']) + ',' + "{:.3f}".format(e['p']) + ',' + get_ent_name_from_wikiid(
