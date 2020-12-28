@@ -123,6 +123,12 @@ def get_total_num_ents():
     else:
         return len(e_id_name['ent_thid2wikiid'])
 
+def get_map_all_valid_ents():
+    m = {}
+    for ent_wikiid,_ in e_id_name['ent_wikiid2name'].items():
+        m[ent_wikiid] = 1
+    return m
+
 print('    Done loading entity name - wikiid. Size thid index = ' + str(get_total_num_ents()))
 if __name__ == '__main__':
     ent_name = ' <nada &amp; ada&quot; ,dada_xml '

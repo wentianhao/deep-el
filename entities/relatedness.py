@@ -75,79 +75,79 @@ def extract_reltd_ents(reltd):
     return reltd_ents_direct
 
 
-if __name__ == '__main__':
-    reltd_validate = load_reltd_set(rel_validate_t7filename, rel_validate_txtfilename, 'validate')
-    reltd_test = load_reltd_set(rel_test_t7filename, rel_test_txtfilename, 'test')
 
-    reltd_ents_direct_validate = extract_reltd_ents(reltd_validate)
-    reltd_ents_direct_test = extract_reltd_ents(reltd_test)
+reltd_validate = load_reltd_set(rel_validate_t7filename, rel_validate_txtfilename, 'validate')
+reltd_test = load_reltd_set(rel_test_t7filename, rel_test_txtfilename, 'test')
 
-    rewtr = {}
-    print('==> Loading relatedness thid tensor')
-    if not os.path.exists(rewtr_t7filename):
-        print('  ---> t7 file NOT found. Loading reltd_ents_wikiid_to_rltdid from txt file instead (slower).')
-        # Gather the restricted set of entities for which we train entity embeddings:
-        rltd_all_ent_wikiids = {}
-        # 1) From the relatedness dataset
-        for ent_wikiid, _ in reltd_ents_direct_validate.items():
-            rltd_all_ent_wikiids[ent_wikiid] = 1
-        for ent_wikiid, _ in reltd_ents_direct_test.items():
-            rltd_all_ent_wikiids[ent_wikiid] = 1
-        # 1.1) From a small dataset (used for debugging / unit testing).
-        for _, line in ent_lines_4EX.items():
-            parts = line.split('\t')
-            assert (len(parts) == 3)
-            ent_wikiid = int(parts[0])
-            assert ent_wikiid
-            rltd_all_ent_wikiids[ent_wikiid] = 1
-        #  2) From all ED datasets:
-        files = {'aida_train.csv', 'aida_testA.csv', 'aida_testB.csv',
-                 'wned-aquaint.csv', 'wned-msnbc.csv', 'wned-ace2004.csv',
-                 'wned-clueweb.csv', 'wned-wikipedia.csv'}
-        for file in files:
-            with open(data_dir + 'generated/test_train_data/' + file, 'r', encoding='utf8') as f:
-                for line in f:
-                    parts = line.split('\t')
-                    assert parts[5] == 'CANDIDATES'
-                    assert parts[len(parts) - 1] == 'GT:'
-                    if parts[6] != 'EMPTYCAND':
-                        for i in range(6, len(parts) - 2):
-                            p = parts[i].split(',')
-                            ent_wikiid = int(p[0])
-                            assert ent_wikiid
-                            rltd_all_ent_wikiids[ent_wikiid] = 1
+reltd_ents_direct_validate = extract_reltd_ents(reltd_validate)
+reltd_ents_direct_test = extract_reltd_ents(reltd_test)
 
-                        p = parts[len(parts) - 1].split(',')
-                        if len(p) >= 2:
-                            ent_wikiid = int(p[1])
-                            assert ent_wikiid
+rewtr = {}
+print('==> Loading relatedness thid tensor')
+if not os.path.exists(rewtr_t7filename):
+    print('  ---> t7 file NOT found. Loading reltd_ents_wikiid_to_rltdid from txt file instead (slower).')
+    # Gather the restricted set of entities for which we train entity embeddings:
+    rltd_all_ent_wikiids = {}
+    # 1) From the relatedness dataset
+    for ent_wikiid, _ in reltd_ents_direct_validate.items():
+        rltd_all_ent_wikiids[ent_wikiid] = 1
+    for ent_wikiid, _ in reltd_ents_direct_test.items():
+        rltd_all_ent_wikiids[ent_wikiid] = 1
+    # 1.1) From a small dataset (used for debugging / unit testing).
+    for _, line in ent_lines_4EX.items():
+        parts = line.split('\t')
+        assert (len(parts) == 3)
+        ent_wikiid = int(parts[0])
+        assert ent_wikiid
+        rltd_all_ent_wikiids[ent_wikiid] = 1
+    #  2) From all ED datasets:
+    files = {'aida_train.csv', 'aida_testA.csv', 'aida_testB.csv',
+             'wned-aquaint.csv', 'wned-msnbc.csv', 'wned-ace2004.csv',
+             'wned-clueweb.csv', 'wned-wikipedia.csv'}
+    for file in files:
+        with open(data_dir + 'generated/test_train_data/' + file, 'r', encoding='utf8') as f:
+            for line in f:
+                parts = line.split('\t')
+                assert parts[5] == 'CANDIDATES'
+                assert parts[len(parts) - 2] == 'GT:'
+                if parts[6] != 'EMPTYCAND':
+                    for i in range(6, len(parts) - 2):
+                        p = parts[i].split(',')
+                        ent_wikiid = int(p[0])
+                        assert ent_wikiid
+                        rltd_all_ent_wikiids[ent_wikiid] = 1
 
-        # Insert unk_ent_wikiid
-        unk_ent_wikiid = 1
-        rltd_all_ent_wikiids[unk_ent_wikiid] = 1
+                    p = parts[len(parts) - 1].split(',')
+                    if len(p) >= 2:
+                        ent_wikiid = int(p[1])
+                        assert ent_wikiid
 
-        # Sort all wikiids
-        sorted_rltd_all_ent_wikiids = []
-        for ent_wikiid, _ in rltd_all_ent_wikiids.items():
-            sorted_rltd_all_ent_wikiids.append(ent_wikiid)
-        sorted_rltd_all_ent_wikiids.sort()
+    # Insert unk_ent_wikiid
+    unk_ent_wikiid = 1
+    rltd_all_ent_wikiids[unk_ent_wikiid] = 1
 
-        reltd_ents_wikiid_to_rltdid = {}
-        for rltd_id, wikiid in enumerate(sorted_rltd_all_ent_wikiids):
-            reltd_ents_wikiid_to_rltdid[wikiid] = rltd_id
+    # Sort all wikiids
+    sorted_rltd_all_ent_wikiids = []
+    for ent_wikiid, _ in rltd_all_ent_wikiids.items():
+        sorted_rltd_all_ent_wikiids.append(ent_wikiid)
+    sorted_rltd_all_ent_wikiids.sort()
+
+    reltd_ents_wikiid_to_rltdid = {}
+    for rltd_id, wikiid in enumerate(sorted_rltd_all_ent_wikiids):
+        reltd_ents_wikiid_to_rltdid[wikiid] = rltd_id
 
 
-        rewtr['reltd_ents_wikiid_to_rltdid'] = reltd_ents_wikiid_to_rltdid
-        rewtr['reltd_ents_rltdid_to_wikiid'] = sorted_rltd_all_ent_wikiids
-        rewtr['num_rltd_ents'] = len(sorted_rltd_all_ent_wikiids)
+    rewtr['reltd_ents_wikiid_to_rltdid'] = reltd_ents_wikiid_to_rltdid
+    rewtr['reltd_ents_rltdid_to_wikiid'] = sorted_rltd_all_ent_wikiids
+    rewtr['num_rltd_ents'] = len(sorted_rltd_all_ent_wikiids)
 
-        print('Writing reltd_ents_wikiid_to_rltdid to t7 File for future usage.')
-        torch.save(rewtr, rewtr_t7filename)
-        print('    Done saving.')
-    else:
-        print('  ---> from t7 file.')
-        rewtr = torch.load(rewtr_t7filename)
+    print('Writing reltd_ents_wikiid_to_rltdid to t7 File for future usage.')
+    torch.save(rewtr, rewtr_t7filename)
+    print('    Done saving.')
+else:
+    print('  ---> from t7 file.')
+    rewtr = torch.load(rewtr_t7filename)
 
-    print('    Done loading relatedness sets. Num queries test = ' + str(len(reltd_test)) +
-          '. Num queries valid = ' + str(len(reltd_validate)) +
-          '. Total num ents restricted set = ' + str(rewtr['num_rltd_ents']))
+print('    Done loading relatedness sets. Num queries test = ' + str(len(reltd_test)) +
+      '. Num queries valid = ' + str(len(reltd_validate)) +
+      '. Total num ents restricted set = ' + str(rewtr['num_rltd_ents']))
